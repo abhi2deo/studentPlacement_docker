@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Student Placement Portal</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:16px Arial,sans-serif;background:#f3f6fb;color:#172033}
+header{background:#12345a;color:white;padding:28px 7%}header h1{margin:0 0 8px}
+nav{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px}nav a{color:white;text-decoration:none}
+main{max-width:1100px;margin:24px auto;padding:0 18px}.hero,.card{background:white;padding:20px;border-radius:12px;box-shadow:0 3px 14px #17203312}
+.stats,.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:18px 0}
+.stat strong{display:block;font-size:28px;color:#1769aa;margin-top:8px}.tag{color:#087443;font-weight:bold}
+input{padding:10px;width:100%;max-width:420px;border:1px solid #bbb;border-radius:7px}
+h2{color:#12345a}footer{text-align:center;padding:24px;color:#667}
+</style></head>
+<body>
+<header><h1>Student Placement Portal</h1><p>Explore opportunities, companies and upcoming recruitment drives.</p>
+<nav><a href="#students">Students</a><a href="#companies">Companies</a><a href="#drives">Recruitment Drives</a><a href="#stats">Statistics</a></nav></header>
+<main>
+<section class="hero"><h2>Welcome to Campus Placements</h2><p>Find eligible roles and prepare for your next career opportunity.</p><input id="search" placeholder="Search companies or roles..." oninput="filterCards()"></section>
+<section id="stats" class="stats"><div class="card stat">Students placed<strong>420</strong></div><div class="card stat">Placement rate<strong>84%</strong></div><div class="card stat">Recruiting companies<strong>36</strong></div><div class="card stat">Highest package<strong>₹24 LPA</strong></div></section>
+<h2 id="companies">Company Opportunities</h2><section id="students" class="cards">
+<div class="card listing"><h3>TechNova</h3><p>Role: Graduate Software Engineer</p><p>Eligibility: B.E./B.Tech, 7.0 CGPA</p><p class="tag">Applications open</p></div>
+<div class="card listing"><h3>CloudBridge</h3><p>Role: Cloud Support Associate</p><p>Eligibility: Any CS-related degree, 6.5 CGPA</p><p class="tag">Applications open</p></div>
+<div class="card listing"><h3>DataWorks</h3><p>Role: Data Analyst Trainee</p><p>Eligibility: Knowledge of SQL and Python</p><p class="tag">Coming soon</p></div></section>
+<h2 id="drives">Upcoming Recruitment Drives</h2><section class="cards"><div class="card"><h3>TechNova</h3><p>Date: 20 November 2026</p><p>Online assessment followed by interviews.</p></div><div class="card"><h3>CloudBridge</h3><p>Date: 25 November 2026</p><p>Technical interview and HR round.</p></div></section>
+</main><footer>University Placement Cell · Student Placement Portal</footer>
+<script>function filterCards(){const q=document.getElementById('search').value.toLowerCase();document.querySelectorAll('.listing').forEach(c=>c.style.display=c.innerText.toLowerCase().includes(q)?'block':'none')}</script>
+</body></html>
