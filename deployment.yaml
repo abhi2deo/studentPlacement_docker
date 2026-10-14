@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: YOUR_DOCKERHUB_USERNAME/placement-portal:latest
+          image: abhinavdeo/placement-portal:latest
           ports:
             - containerPort: 80
           readinessProbe:
@@ -33,7 +33,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: placement-portal-service
+  name: student-placement-portal
 spec:
   type: NodePort
   selector:
