@@ -1,3 +1,11 @@
+parameters {
+    booleanParam(
+        name: 'SIMULATE_FAILURE',
+        defaultValue: false,
+        description: 'Deploy a faulty image to test automatic rollback'
+    )
+}
+
 pipeline {
     agent any
     environment {
@@ -38,26 +46,59 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Kubernetes') {
-            steps {
-                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
-                    sh '''
-                      export KUBECONFIG="$KUBECONFIG_FILE"
-                      kubectl apply -f deployment.yaml
-                      kubectl set image deployment/$DEPLOYMENT web=$IMAGE
-                      if ! kubectl rollout status deployment/$DEPLOYMENT --timeout=120s; then
-                        echo "Rollout failed; restoring previous stable revision"
-                        kubectl rollout undo deployment/$DEPLOYMENT
-                        kubectl rollout status deployment/$DEPLOYMENT --timeout=120s
-                        exit 1
-                      fi
-                      kubectl get pods -l app=$DEPLOYMENT
-                      kubectl get service placement-portal-service
-                    '''
+        stage('Deploy and Verify') {
+    steps {
+        script {
+            def deployImage = params.SIMULATE_FAILURE
+                ? 'YOUR_DOCKERHUB_USERNAME/placement-portal:broken-demo'
+                : env.IMAGE
+
+            withCredentials([
+                file(
+                    credentialsId: 'kubeconfig',
+                    variable: 'KUBECONFIG_FILE'
+                )
+            ]) {
+                def result = bat(
+                    returnStatus: true,
+                    script: """
+                        @echo off
+                        set KUBECONFIG=%KUBECONFIG_FILE%
+
+                        kubectl set image deployment/placement-portal web=${deployImage}
+
+                        if errorlevel 1 exit /b 1
+
+                        kubectl rollout status deployment/placement-portal --timeout=90s
+
+                        if errorlevel 1 (
+                            echo FAILED ROLLOUT DETECTED
+                            echo Rolling back to the previous stable version...
+
+                            kubectl rollout undo deployment/placement-portal
+                            if errorlevel 1 exit /b 1
+
+                            kubectl rollout status deployment/placement-portal --timeout=90s
+                            if errorlevel 1 exit /b 1
+
+                            echo ROLLBACK SUCCESSFUL
+                            exit /b 1
+                        )
+
+                        echo DEPLOYMENT SUCCESSFUL
+                    """
+                )
+
+                if (result != 0 && !params.SIMULATE_FAILURE) {
+                    error('Deployment failed.')
+                }
+                if (result != 0) {
+                    echo 'Failure was detected. Check the rollback logs and verify the restored application.'
                 }
             }
         }
     }
+
     post {
         always { echo 'Pipeline finished. Check stage logs for the result.' }
     }
