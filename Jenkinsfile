@@ -9,7 +9,7 @@ parameters {
 pipeline {
     agent any
     environment {
-        IMAGE = "YOUR_DOCKERHUB_USERNAME/placement-portal:${BUILD_NUMBER}"
+        IMAGE = "abhinavdeoE/placement-portal:${BUILD_NUMBER}"
         DEPLOYMENT = "placement-portal"
         CONTAINER = "web"
     }
@@ -50,7 +50,7 @@ pipeline {
     steps {
         script {
             def deployImage = params.SIMULATE_FAILURE
-                ? 'YOUR_DOCKERHUB_USERNAME/placement-portal:broken-demo'
+                ? 'abhinavdeo/placement-portal:broken-demo'
                 : env.IMAGE
 
             withCredentials([
